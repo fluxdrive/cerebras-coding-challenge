@@ -9,6 +9,8 @@ When `run()` is called on every PE, the collectives are initialized, each PE com
 
 Colors c2d_y_color_0/1 (IDs 4, 5) carry the y-gather NORTH along columns. Colors c2d_x_color_0/1 (IDs 0, 1) carry the x-gather WEST along row 0. Each wavelet carries one f32 value, alternating between a squared L2 distance and a bitcast global row index.
 
+![Routing topology] (routing_topology_knn.svg)
+
 ## Section 2 - Local top-K algorithm
 
 Each PE runs insertion sort over its `rows_per_pe` rows, keeping a sorted list of K `(dist, global_index)` pairs. Global indices are computed as `pe_linear * rows_per_pe + local_row` so the merge can compare entries across PE boundaries. Insertion sort was chosen because K is small (at most 256) and the list stays sorted at all times, making it directly ready for the merge step.

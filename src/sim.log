@@ -15,24 +15,24 @@
 @0 sizeof(      exops_t):       6584 bytes
 @0 sizeof(hwtile_follow):     207840 bytes
 @0 dimX=11, dimY=6
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_all_equal_0/out_all_equal/generated/default.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_all_equal_0/out_all_equal/generated/coord.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_all_equal_0/out_all_equal/bin/out_3_0.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_all_equal_0/out_all_equal/bin/out_1_0.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_all_equal_0/out_all_equal/bin/out_0_0.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_all_equal_0/out_all_equal/bin/out_2_0.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_all_equal_0/out_all_equal/east/bin/out_1_0.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_all_equal_0/out_all_equal/east/bin/out_3_0.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_all_equal_0/out_all_equal/east/bin/out_2_0.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_all_equal_0/out_all_equal/east/bin/out_0_0.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_all_equal_0/out_all_equal/west/bin/out_4_0.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_all_equal_0/out_all_equal/west/bin/out_5_0.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_all_equal_0/out_all_equal/west/bin/out_3_0.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_all_equal_0/out_all_equal/west/bin/out_0_0.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_all_equal_0/out_all_equal/west/bin/out_1_0.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_all_equal_0/out_all_equal/west/bin/out_2_0.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_all_equal_0/out_all_equal/generated/MEMCPY_XY_ROUTES.elf
-@0 Invocation key is: sim52D921B997FE3BE2CF9A45735ABAFA12
+@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_duplicates_0/out_duplicates/generated/default.elf
+@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_duplicates_0/out_duplicates/generated/coord.elf
+@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_duplicates_0/out_duplicates/bin/out_2_0.elf
+@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_duplicates_0/out_duplicates/bin/out_1_0.elf
+@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_duplicates_0/out_duplicates/bin/out_3_0.elf
+@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_duplicates_0/out_duplicates/bin/out_0_0.elf
+@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_duplicates_0/out_duplicates/east/bin/out_1_0.elf
+@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_duplicates_0/out_duplicates/east/bin/out_3_0.elf
+@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_duplicates_0/out_duplicates/east/bin/out_2_0.elf
+@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_duplicates_0/out_duplicates/east/bin/out_0_0.elf
+@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_duplicates_0/out_duplicates/west/bin/out_4_0.elf
+@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_duplicates_0/out_duplicates/west/bin/out_5_0.elf
+@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_duplicates_0/out_duplicates/west/bin/out_2_0.elf
+@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_duplicates_0/out_duplicates/west/bin/out_0_0.elf
+@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_duplicates_0/out_duplicates/west/bin/out_3_0.elf
+@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_duplicates_0/out_duplicates/west/bin/out_1_0.elf
+@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_duplicates_0/out_duplicates/generated/MEMCPY_XY_ROUTES.elf
+@0 Invocation key is: sim7838C5C4096CED6486088F824BC08794
 @0 Plan key is: plan34A3D4139F5F8BE0CD504134808A3823
 @0 SimTraceCtf, flags:  wavelets=0 landing=1 inst=1 switch_positions=0 stalls=1
 @0 P0.0 (nul) tile trace flag: inst_trace,landing,stalls
@@ -137,13 +137,13 @@
 @0 LS10 (nul) tile trace flag: inst_trace,landing,stalls
 @0 Architecture is: FYN
 @0 Simtile is: hwtile
-@0 Sim stats: config-time=0.01, nodes=1, threads=5
+@0 Sim stats: config-time=0.02, nodes=1, threads=5
 @0 Sim stats: tiles=100, simulated_tiles=24, hwtile=20, iotile=4, nultile=76
-@312541 50 cycles since an instruction was executed, 81 cycles since a wavelet landed
-@312541 No data movement in the last 50 cycles; stopping.
-@312541 Simulation used 38.13 seconds, init-time=0.26, total-time=38.39, cycles=312541, cyc/sec=8195.92, tile-cyc/sec=196702.14, tile-cyc/sec-thread=39340.43
-@312541 CTF Stats: num_stalls_       =     25793699
-@312541 CTF Stats: num_wavelets      =       166173
-@312541 CTF Stats: num_inst_dispatch =       979628
-@312541 CTF Stats: num_inst_pipe     =      1963246
-@312541 CTF Stats: num_switch_pos    =            0
+@207314 No data movement in the last 50 cycles; stopping.
+@207314 50 cycles since an instruction was executed, 86 cycles since a wavelet landed
+@207314 Simulation used 26.99 seconds, init-time=0.36, total-time=27.35, cycles=207314, cyc/sec=7680.48, tile-cyc/sec=184331.63, tile-cyc/sec-thread=36866.33
+@207314 CTF Stats: num_stalls_       =     17066233
+@207314 CTF Stats: num_wavelets      =       165789
+@207314 CTF Stats: num_inst_dispatch =       626714
+@207314 CTF Stats: num_inst_pipe     =      1289311
+@207314 CTF Stats: num_switch_pos    =            0
