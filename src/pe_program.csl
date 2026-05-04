@@ -1,0 +1,224 @@
+// pe_program.csl — Top-K k-NN kernel
+//
+// Execution flow:
+//   1. host memcpys D_shard and q to every PE
+//   2. host calls run() on every PE → inits collectives, activates compute_task
+//   3. compute_task: each PE computes local top-K, then gathers up column to row 0
+//   4. merge_col_task (row 0 only does work): merges P local top-Ks → K results
+//                     then all row-0 PEs gather along row to PE(0,0)
+//   5. final_task (PE(0,0) only does work): merges P results → global top-K
+//                 all PEs call unblock_cmd_stream
+
+param memcpy_params;
+param c2d_params;
+
+param d_dim:             u16;
+param rows_per_pe:       u16;
+param K:                 u16;
+param P:                 u16;
+
+param compute_task_id:   local_task_id;
+param merge_col_task_id: local_task_id;
+param final_task_id:     local_task_id;
+
+// ── imports ────────────────────────────────────────────────────────────────
+
+const sys_mod = @import_module("<memcpy/memcpy>", memcpy_params);
+
+const mpi_x = @import_module("<collectives_2d/pe>", .{
+  .dim_params   = c2d_params.x,
+  .queues       = [2]u16{ 2, 4 },
+  .dest_dsr_ids = [1]u16{ 1 },
+  .src0_dsr_ids = [1]u16{ 1 },
+  .src1_dsr_ids = [1]u16{ 1 },
+});
+
+const mpi_y = @import_module("<collectives_2d/pe>", .{
+  .dim_params   = c2d_params.y,
+  .queues       = [2]u16{ 3, 5 },
+  .dest_dsr_ids = [1]u16{ 2 },
+  .src0_dsr_ids = [1]u16{ 2 },
+  .src1_dsr_ids = [1]u16{ 2 },
+});
+
+// ── PE identity ────────────────────────────────────────────────────────────
+// Set in run() after mpi init, used by tasks
+
+var pe_x: u16 = 0;
+var pe_y: u16 = 0;
+var global_row_start: i32 = 0;
+
+// ── memory buffers ─────────────────────────────────────────────────────────
+
+var D_shard = @zeros([rows_per_pe * d_dim]f32);
+var q       = @zeros([d_dim]f32);
+
+// K pairs of (dist_f32, idx_bitcast_as_f32) — local top-K result
+const K_pairs: u16 = K * 2;
+var local_topk = @zeros([K_pairs]f32);
+
+// Column gather: row-0 PEs receive P * K_pairs elements from their column
+var col_gather = @zeros([P * K_pairs]f32);
+
+// Row gather: PE(0,0) receives P * K_pairs elements from row-0 PEs
+var row_gather = @zeros([P * K_pairs]f32);
+
+// Final output — only PE(0,0) writes these
+var out_idx  = @zeros([K]i32);
+var out_dist = @zeros([K]f32);
+
+// Exported pointers
+var D_shard_ptr:  [*]f32 = &D_shard;
+var q_ptr:        [*]f32 = &q;
+var out_idx_ptr:  [*]i32 = &out_idx;
+var out_dist_ptr: [*]f32 = &out_dist;
+
+// ── local compute ──────────────────────────────────────────────────────────
+
+fn squared_l2(row: u16) f32 {
+  var dist: f32 = 0.0;
+  var j: u16 = 0;
+  while (j < d_dim) : (j += 1) {
+    const diff = D_shard[row * d_dim + j] - q[j];
+    dist += diff * diff;
+  }
+  return dist;
+}
+
+// Insert (dist, gidx) into local_topk[] keeping ascending (dist, gidx) order.
+// count_ptr tracks how many valid entries exist (starts at 0, caps at K).
+fn topk_insert(dist: f32, gidx: i32, count_ptr: *u16) void {
+  const count = count_ptr.*;
+  // Find insertion point
+  var ins: u16 = count;
+  var i: u16 = 0;
+  while (i < count) : (i += 1) {
+    const ed = local_topk[i * 2];
+    const ei = @bitcast(i32, local_topk[i * 2 + 1]);
+    if (dist < ed or (dist == ed and gidx < ei)) {
+      ins = i;
+      break;
+    }
+  }
+  if (ins >= K) { return; }
+  // Shift right to make room, dropping last if full
+  const end: u16 = if (count < K) count else K - 1;
+  var j: u16 = end;
+  while (j > ins) : (j -= 1) {
+    local_topk[j * 2]     = local_topk[(j - 1) * 2];
+    local_topk[j * 2 + 1] = local_topk[(j - 1) * 2 + 1];
+  }
+  local_topk[ins * 2]     = dist;
+  local_topk[ins * 2 + 1] = @bitcast(f32, gidx);
+  if (count < K) { count_ptr.* = count + 1; }
+}
+
+fn compute_local_topk() void {
+  var count: u16 = 0;
+  var r: u16 = 0;
+  while (r < rows_per_pe) : (r += 1) {
+    const dist = squared_l2(r);
+    const gidx: i32 = global_row_start + @as(i32, r);
+    topk_insert(dist, gidx, &count);
+  }
+  // Pad remaining slots with +inf sentinel so merge comparisons are safe
+  while (count < K) : (count += 1) {
+    local_topk[count * 2]     = @bitcast(f32, @as(u32, 0x7f800000));
+    local_topk[count * 2 + 1] = @bitcast(f32, @as(u32, 0x7fffffff));
+  }
+}
+
+// ── merge ──────────────────────────────────────────────────────────────────
+
+// Merge n_lists sorted K-length lists from src[] into dst[K_pairs].
+// src layout: list0[K_pairs] | list1[K_pairs] | ...
+// Each entry is (dist_f32, idx_bitcast_f32). Tie-break: smaller idx wins.
+fn merge_lists(src: [*]f32, n_lists: u16, dst: [*]f32) void {
+  var heads = @zeros([P]u16); // current position in each list
+  var taken: u16 = 0;
+  while (taken < K) : (taken += 1) {
+    var best_dist: f32 = @bitcast(f32, @as(u32, 0x7f800000));
+    var best_idx:  i32 = @bitcast(i32, @as(u32, 0x7fffffff));
+    var best_list: u16 = 0;
+    var li: u16 = 0;
+    while (li < n_lists) : (li += 1) {
+      const h = heads[li];
+      if (h >= K) { continue; }
+      const d  = src[@as(u16, li) * K_pairs + h * 2];
+      const ix = @bitcast(i32, src[@as(u16, li) * K_pairs + h * 2 + 1]);
+      if (d < best_dist or (d == best_dist and ix < best_idx)) {
+        best_dist = d;
+        best_idx  = ix;
+        best_list = li;
+      }
+    }
+    dst[taken * 2]     = best_dist;
+    dst[taken * 2 + 1] = @bitcast(f32, best_idx);
+    heads[best_list] += 1;
+  }
+}
+
+// ── tasks ──────────────────────────────────────────────────────────────────
+
+task compute_task() void {
+  // q is already on every PE via host memcpy
+  // Compute local top-K then gather up the column to row 0
+  compute_local_topk();
+  var send = @ptrcast([*]u32, &local_topk);
+  var recv = @ptrcast([*]u32, &col_gather);
+  mpi_y.gather(0, send, recv, K_pairs, merge_col_task_id);
+}
+
+task merge_col_task() void {
+  // Row-0 PEs received P * K_pairs elements in col_gather — merge to K
+  // Non-row-0 PEs: local_topk still holds their local result (unused after this)
+  if (pe_y == 0) {
+    merge_lists(&col_gather, P, &local_topk);
+  }
+  // All row-0 PEs gather their merged K results to PE(0,0)
+  // Non-row-0 PEs also call gather so the collective completes —
+  // they send local_topk (ignored by PE(0,0)) and recv into row_gather (unused)
+  var send = @ptrcast([*]u32, &local_topk);
+  var recv = @ptrcast([*]u32, &row_gather);
+  mpi_x.gather(0, send, recv, K_pairs, final_task_id);
+}
+
+task final_task() void {
+  if (pe_x == 0 and pe_y == 0) {
+    // row_gather has P * K_pairs elements from all row-0 PEs — final merge
+    merge_lists(&row_gather, P, &local_topk);
+    var i: u16 = 0;
+    while (i < K) : (i += 1) {
+      out_dist[i] = local_topk[i * 2];
+      out_idx[i]  = @bitcast(i32, local_topk[i * 2 + 1]);
+    }
+  }
+  sys_mod.unblock_cmd_stream();
+}
+
+// ── entry point ────────────────────────────────────────────────────────────
+
+fn run() void {
+  // Init collectives first — pe_id is only valid after init
+  mpi_y.init();
+  mpi_x.init();
+  pe_x = mpi_x.pe_id;
+  pe_y = mpi_y.pe_id;
+  global_row_start = (@as(i32, pe_y) * @as(i32, P) + @as(i32, pe_x))
+                     * @as(i32, rows_per_pe);
+  @activate(compute_task_id);
+}
+
+// ── comptime ───────────────────────────────────────────────────────────────
+
+comptime {
+  @bind_local_task(compute_task,   compute_task_id);
+  @bind_local_task(merge_col_task, merge_col_task_id);
+  @bind_local_task(final_task,     final_task_id);
+
+  @export_symbol(D_shard_ptr,  "D_shard");
+  @export_symbol(q_ptr,        "q");
+  @export_symbol(out_idx_ptr,  "out_idx");
+  @export_symbol(out_dist_ptr, "out_dist");
+  @export_symbol(run);
+}

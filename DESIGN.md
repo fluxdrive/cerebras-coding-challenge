@@ -1,5 +1,5 @@
 # DESIGN.md
-Start time: Thursday, Apr 30 2026, 8:22 PM
+Start time: Friday, May 1 2026, 8:22 AM
 
 ## Section 1 - Routing topology
 

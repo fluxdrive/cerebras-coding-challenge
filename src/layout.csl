@@ -1,0 +1,73 @@
+// color/ task ID map
+//
+//  ID var                ID var               ID var                 ID var
+//   0 c2d_x_color_0       9                   18                     27 reserved (memcpy)
+//   1 c2d_x_color_1      10 c2d_x_entrypt_0   19                     28 reserved (memcpy)
+//   2                    11 c2d_x_entrypt_1   20                     29 reserved
+//   3                    12 c2d_y_entrypt_0   21 reserved (memcpy)   30 reserved (memcpy)
+//   4 c2d_y_color_0      13 c2d_y_entrypt_1   22 reserved (memcpy)   31 reserved
+//   5 c2d_y_color_1      14                   23 reserved (memcpy)   32
+//   6                    15 compute_task_id   24                     33
+//   7                    16 merge_col_task_id 25                     34
+//   8                    17 final_task_id     26                     35
+
+param P:           u16; // grid is P x P
+param d_dim:       u16; // vector dimension
+param rows_per_pe: u16; // ceil(N / P^2)
+param K:           u16; // number of neighbors
+
+const c2d_x_color_0:   color        = @get_color(0);
+const c2d_x_color_1:   color        = @get_color(1);
+const c2d_y_color_0:   color        = @get_color(4);
+const c2d_y_color_1:   color        = @get_color(5);
+
+const c2d_x_entrypt_0: local_task_id = @get_local_task_id(10);
+const c2d_x_entrypt_1: local_task_id = @get_local_task_id(11);
+const c2d_y_entrypt_0: local_task_id = @get_local_task_id(12);
+const c2d_y_entrypt_1: local_task_id = @get_local_task_id(13);
+
+const compute_task_id:   local_task_id = @get_local_task_id(15);
+const merge_col_task_id: local_task_id = @get_local_task_id(16);
+const final_task_id:     local_task_id = @get_local_task_id(17);
+
+const memcpy = @import_module("<memcpy/get_params>", .{
+  .width  = P,
+  .height = P,
+});
+const c2d = @import_module("<collectives_2d/params>");
+
+layout {
+  @set_rectangle(P, P);
+
+  var Px: u16 = 0;
+  while (Px < P) : (Px += 1) {
+    var Py: u16 = 0;
+    const memcpy_params = memcpy.get_params(Px);
+    while (Py < P) : (Py += 1) {
+      const c2d_params = c2d.get_params(Px, Py, .{
+        .x_colors      = .{ c2d_x_color_0,   c2d_x_color_1   },
+        .x_entrypoints = .{ c2d_x_entrypt_0, c2d_x_entrypt_1 },
+        .y_colors      = .{ c2d_y_color_0,   c2d_y_color_1   },
+        .y_entrypoints = .{ c2d_y_entrypt_0, c2d_y_entrypt_1 },
+      });
+      @set_tile_code(Px, Py, "pe_program.csl", .{
+        .memcpy_params       = memcpy_params,
+        .c2d_params          = c2d_params,
+        .d_dim               = d_dim,
+        .rows_per_pe         = rows_per_pe,
+        .K                   = K,
+        .P                   = P,
+        .compute_task_id     = compute_task_id,
+        .merge_col_task_id   = merge_col_task_id,
+        .final_task_id       = final_task_id,
+        });
+    }
+  }
+
+  @export_name("D_shard",  [*]f32, true);   // input: database rows for this PE
+  @export_name("q",        [*]f32, true);   // input: query vector
+  @export_name("out_idx",  [*]i32, true);  // output: top-K indices (PE(0,0) only)
+  @export_name("out_dist", [*]f32, true);  // output: top-K distances (PE(0,0) only)
+  @export_name("col_gather", [*]f32, true);
+  @export_name("run", fn()void);            // host calls this to start
+}
