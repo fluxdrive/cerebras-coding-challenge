@@ -9,7 +9,7 @@ When `run()` is called on every PE, the collectives are initialized, each PE com
 
 Colors c2d_y_color_0/1 (IDs 4, 5) carry the y-gather NORTH along columns. Colors c2d_x_color_0/1 (IDs 0, 1) carry the x-gather WEST along row 0. Each wavelet carries one f32 value, alternating between a squared L2 distance and a bitcast global row index.
 
-![Routing topology] (routing_topology_knn.svg)
+![Routing topology] (routing_topology_knn.png)
 
 ## Section 2 - Local top-K algorithm
 
