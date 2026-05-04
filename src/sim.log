@@ -15,33 +15,24 @@
 @0 sizeof(      exops_t):       6584 bytes
 @0 sizeof(hwtile_follow):     207840 bytes
 @0 dimX=11, dimY=6
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_uneven_0/out_uneven/generated/default.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_uneven_0/out_uneven/generated/coord.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_uneven_0/out_uneven/bin/out_2_0.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_uneven_0/out_uneven/bin/out_0_0.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_uneven_0/out_uneven/bin/out_7_0.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_uneven_0/out_uneven/bin/out_3_0.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_uneven_0/out_uneven/bin/out_1_0.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_uneven_0/out_uneven/bin/out_4_0.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_uneven_0/out_uneven/bin/out_8_0.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_uneven_0/out_uneven/bin/out_6_0.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_uneven_0/out_uneven/bin/out_5_0.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_uneven_0/out_uneven/east/bin/out_2_0.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_uneven_0/out_uneven/east/bin/out_5_0.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_uneven_0/out_uneven/east/bin/out_4_0.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_uneven_0/out_uneven/east/bin/out_3_0.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_uneven_0/out_uneven/east/bin/out_1_0.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_uneven_0/out_uneven/east/bin/out_0_0.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_uneven_0/out_uneven/west/bin/out_3_0.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_uneven_0/out_uneven/west/bin/out_6_0.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_uneven_0/out_uneven/west/bin/out_7_0.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_uneven_0/out_uneven/west/bin/out_4_0.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_uneven_0/out_uneven/west/bin/out_0_0.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_uneven_0/out_uneven/west/bin/out_5_0.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_uneven_0/out_uneven/west/bin/out_2_0.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_uneven_0/out_uneven/west/bin/out_1_0.elf
-@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_uneven_0/out_uneven/generated/MEMCPY_XY_ROUTES.elf
-@0 Invocation key is: simB8EC48FCCD6C62E1B7F8C42EDBCDC2AE
+@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_all_equal_0/out_all_equal/generated/default.elf
+@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_all_equal_0/out_all_equal/generated/coord.elf
+@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_all_equal_0/out_all_equal/bin/out_3_0.elf
+@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_all_equal_0/out_all_equal/bin/out_1_0.elf
+@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_all_equal_0/out_all_equal/bin/out_0_0.elf
+@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_all_equal_0/out_all_equal/bin/out_2_0.elf
+@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_all_equal_0/out_all_equal/east/bin/out_1_0.elf
+@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_all_equal_0/out_all_equal/east/bin/out_3_0.elf
+@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_all_equal_0/out_all_equal/east/bin/out_2_0.elf
+@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_all_equal_0/out_all_equal/east/bin/out_0_0.elf
+@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_all_equal_0/out_all_equal/west/bin/out_4_0.elf
+@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_all_equal_0/out_all_equal/west/bin/out_5_0.elf
+@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_all_equal_0/out_all_equal/west/bin/out_3_0.elf
+@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_all_equal_0/out_all_equal/west/bin/out_0_0.elf
+@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_all_equal_0/out_all_equal/west/bin/out_1_0.elf
+@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_all_equal_0/out_all_equal/west/bin/out_2_0.elf
+@0 Reading ELF file /tmp/pytest-of-viknesh/pytest-4/test_case_all_equal_0/out_all_equal/generated/MEMCPY_XY_ROUTES.elf
+@0 Invocation key is: sim52D921B997FE3BE2CF9A45735ABAFA12
 @0 Plan key is: plan34A3D4139F5F8BE0CD504134808A3823
 @0 SimTraceCtf, flags:  wavelets=0 landing=1 inst=1 switch_positions=0 stalls=1
 @0 P0.0 (nul) tile trace flag: inst_trace,landing,stalls
@@ -63,10 +54,10 @@
 @0 P5.1 (hwtile) tile trace flag: inst_trace,landing,stalls
 @0 P6.1 (hwtile) tile trace flag: inst_trace,landing,stalls
 @0 P7.1 (hwtile) tile trace flag: inst_trace,landing,stalls
-@0 P8.1 (hwtile) tile trace flag: inst_trace,landing,stalls
-@0 P9.1 (hwtile) tile trace flag: inst_trace,landing,stalls
-@0 P10.1 (nul) tile trace flag: inst_trace,landing,stalls
-@0 P0.2 (nul) tile trace flag: inst_trace,landing,stalls
+@0 P8.1 (nul) tile trace flag: inst_trace,landing,stalls
+@0 P9.1 (nul) tile trace flag: inst_trace,landing,stalls
+@0 P10.1 (hwtile) tile trace flag: inst_trace,landing,stalls
+@0 P0.2 (hwtile) tile trace flag: inst_trace,landing,stalls
 @0 P1.2 (hwtile) tile trace flag: inst_trace,landing,stalls
 @0 P2.2 (hwtile) tile trace flag: inst_trace,landing,stalls
 @0 P3.2 (hwtile) tile trace flag: inst_trace,landing,stalls
@@ -76,29 +67,29 @@
 @0 P7.2 (hwtile) tile trace flag: inst_trace,landing,stalls
 @0 P8.2 (hwtile) tile trace flag: inst_trace,landing,stalls
 @0 P9.2 (hwtile) tile trace flag: inst_trace,landing,stalls
-@0 P10.2 (nul) tile trace flag: inst_trace,landing,stalls
+@0 P10.2 (hwtile) tile trace flag: inst_trace,landing,stalls
 @0 P0.3 (nul) tile trace flag: inst_trace,landing,stalls
-@0 P1.3 (hwtile) tile trace flag: inst_trace,landing,stalls
-@0 P2.3 (hwtile) tile trace flag: inst_trace,landing,stalls
-@0 P3.3 (hwtile) tile trace flag: inst_trace,landing,stalls
-@0 P4.3 (hwtile) tile trace flag: inst_trace,landing,stalls
-@0 P5.3 (hwtile) tile trace flag: inst_trace,landing,stalls
-@0 P6.3 (hwtile) tile trace flag: inst_trace,landing,stalls
-@0 P7.3 (hwtile) tile trace flag: inst_trace,landing,stalls
-@0 P8.3 (hwtile) tile trace flag: inst_trace,landing,stalls
-@0 P9.3 (hwtile) tile trace flag: inst_trace,landing,stalls
-@0 P10.3 (hwtile) tile trace flag: inst_trace,landing,stalls
-@0 P0.4 (hwtile) tile trace flag: inst_trace,landing,stalls
-@0 P1.4 (hwtile) tile trace flag: inst_trace,landing,stalls
-@0 P2.4 (hwtile) tile trace flag: inst_trace,landing,stalls
-@0 P3.4 (hwtile) tile trace flag: inst_trace,landing,stalls
-@0 P4.4 (hwtile) tile trace flag: inst_trace,landing,stalls
-@0 P5.4 (hwtile) tile trace flag: inst_trace,landing,stalls
-@0 P6.4 (hwtile) tile trace flag: inst_trace,landing,stalls
-@0 P7.4 (hwtile) tile trace flag: inst_trace,landing,stalls
-@0 P8.4 (hwtile) tile trace flag: inst_trace,landing,stalls
-@0 P9.4 (hwtile) tile trace flag: inst_trace,landing,stalls
-@0 P10.4 (hwtile) tile trace flag: inst_trace,landing,stalls
+@0 P1.3 (nul) tile trace flag: inst_trace,landing,stalls
+@0 P2.3 (nul) tile trace flag: inst_trace,landing,stalls
+@0 P3.3 (nul) tile trace flag: inst_trace,landing,stalls
+@0 P4.3 (nul) tile trace flag: inst_trace,landing,stalls
+@0 P5.3 (nul) tile trace flag: inst_trace,landing,stalls
+@0 P6.3 (nul) tile trace flag: inst_trace,landing,stalls
+@0 P7.3 (nul) tile trace flag: inst_trace,landing,stalls
+@0 P8.3 (nul) tile trace flag: inst_trace,landing,stalls
+@0 P9.3 (nul) tile trace flag: inst_trace,landing,stalls
+@0 P10.3 (nul) tile trace flag: inst_trace,landing,stalls
+@0 P0.4 (nul) tile trace flag: inst_trace,landing,stalls
+@0 P1.4 (nul) tile trace flag: inst_trace,landing,stalls
+@0 P2.4 (nul) tile trace flag: inst_trace,landing,stalls
+@0 P3.4 (nul) tile trace flag: inst_trace,landing,stalls
+@0 P4.4 (nul) tile trace flag: inst_trace,landing,stalls
+@0 P5.4 (nul) tile trace flag: inst_trace,landing,stalls
+@0 P6.4 (nul) tile trace flag: inst_trace,landing,stalls
+@0 P7.4 (nul) tile trace flag: inst_trace,landing,stalls
+@0 P8.4 (nul) tile trace flag: inst_trace,landing,stalls
+@0 P9.4 (nul) tile trace flag: inst_trace,landing,stalls
+@0 P10.4 (nul) tile trace flag: inst_trace,landing,stalls
 @0 P0.5 (nul) tile trace flag: inst_trace,landing,stalls
 @0 P1.5 (nul) tile trace flag: inst_trace,landing,stalls
 @0 P2.5 (nul) tile trace flag: inst_trace,landing,stalls
@@ -112,15 +103,15 @@
 @0 P10.5 (nul) tile trace flag: inst_trace,landing,stalls
 @0 LW0 (nul) tile trace flag: inst_trace,landing,stalls
 @0 LW1 (iotile) tile trace flag: inst_trace,landing,stalls
-@0 LW2 (nul) tile trace flag: inst_trace,landing,stalls
+@0 LW2 (iotile) tile trace flag: inst_trace,landing,stalls
 @0 LW3 (nul) tile trace flag: inst_trace,landing,stalls
-@0 LW4 (iotile) tile trace flag: inst_trace,landing,stalls
+@0 LW4 (nul) tile trace flag: inst_trace,landing,stalls
 @0 LW5 (nul) tile trace flag: inst_trace,landing,stalls
 @0 LE0 (nul) tile trace flag: inst_trace,landing,stalls
-@0 LE1 (nul) tile trace flag: inst_trace,landing,stalls
-@0 LE2 (nul) tile trace flag: inst_trace,landing,stalls
-@0 LE3 (iotile) tile trace flag: inst_trace,landing,stalls
-@0 LE4 (iotile) tile trace flag: inst_trace,landing,stalls
+@0 LE1 (iotile) tile trace flag: inst_trace,landing,stalls
+@0 LE2 (iotile) tile trace flag: inst_trace,landing,stalls
+@0 LE3 (nul) tile trace flag: inst_trace,landing,stalls
+@0 LE4 (nul) tile trace flag: inst_trace,landing,stalls
 @0 LE5 (nul) tile trace flag: inst_trace,landing,stalls
 @0 LN0 (nul) tile trace flag: inst_trace,landing,stalls
 @0 LN1 (nul) tile trace flag: inst_trace,landing,stalls
@@ -146,13 +137,13 @@
 @0 LS10 (nul) tile trace flag: inst_trace,landing,stalls
 @0 Architecture is: FYN
 @0 Simtile is: hwtile
-@0 Sim stats: config-time=0.04, nodes=1, threads=5
-@0 Sim stats: tiles=100, simulated_tiles=44, hwtile=40, iotile=4, nultile=56
-@130718 50 cycles since an instruction was executed, 81 cycles since a wavelet landed
-@130718 No data movement in the last 50 cycles; stopping.
-@130718 Simulation used 28.30 seconds, init-time=0.81, total-time=29.11, cycles=130718, cyc/sec=4618.91, tile-cyc/sec=203232.14, tile-cyc/sec-thread=40646.43
-@130718 CTF Stats: num_stalls_       =     13460101
-@130718 CTF Stats: num_wavelets      =       471077
-@130718 CTF Stats: num_inst_dispatch =      1272845
-@130718 CTF Stats: num_inst_pipe     =      2580297
-@130718 CTF Stats: num_switch_pos    =            0
+@0 Sim stats: config-time=0.01, nodes=1, threads=5
+@0 Sim stats: tiles=100, simulated_tiles=24, hwtile=20, iotile=4, nultile=76
+@312541 50 cycles since an instruction was executed, 81 cycles since a wavelet landed
+@312541 No data movement in the last 50 cycles; stopping.
+@312541 Simulation used 38.13 seconds, init-time=0.26, total-time=38.39, cycles=312541, cyc/sec=8195.92, tile-cyc/sec=196702.14, tile-cyc/sec-thread=39340.43
+@312541 CTF Stats: num_stalls_       =     25793699
+@312541 CTF Stats: num_wavelets      =       166173
+@312541 CTF Stats: num_inst_dispatch =       979628
+@312541 CTF Stats: num_inst_pipe     =      1963246
+@312541 CTF Stats: num_switch_pos    =            0
