@@ -1,119 +1,35 @@
-# Cerebras Kernel Challenge — Top-K k-NN
+Start time: Friday, May 1 2026, 8:22 AM
 
-## What you're building
+## Section 1 - Routing topology
 
-A CSL kernel that, for a given query vector `q` and a sharded database
-`D` (N rows, d dims, spread across a P×P grid of PEs), returns the `K`
-rows of `D` closest to `q` in Euclidean distance, sorted ascending, with
-deterministic tie-breaking by original index.
+When `run()` is called on every PE, the collectives are initialized, each PE computes its `global_row_start` offset, and `compute_task` is activated. Each PE computes squared L2 distances for its local shard, builds a sorted local top-K list, and calls `mpi_y.gather(root=0)` to send K pairs up the column to row 0. `merge_col_task` fires next, row-0 PEs merge their P x K results into K pairs, then all row-0 PEs call `mpi_x.gather(root=0)` to send K pairs to PE(0,0). `final_task` fires last, PE(0,0) merges P x K results into the global top-K and writes `out_idx` and `out_dist`, and every PE calls `unblock_cmd_stream`.
 
-Trivial in NumPy (`reference.py` is ~10 lines). The interesting work is
-mapping it onto the wafer: sharding, routing, packing `(dist, idx)`
-pairs through collectives, surviving ties through a distributed
-reduction, and fitting in ~48 KB of PE SRAM.
+`q` is memcpy'd to every PE by the host before launch, avoiding a broadcast collective and saving one round-trip.
 
-**Skim `SPEC.md` now** — that's the authoritative statement. This README
-is the onramp.
+Colors c2d_y_color_0/1 (IDs 4, 5) carry the y-gather NORTH along columns. Colors c2d_x_color_0/1 (IDs 0, 1) carry the x-gather WEST along row 0. Each wavelet carries one f32 value, alternating between a squared L2 distance and a bitcast global row index.
 
-Use of AI tools is encouraged!
+![Routing topology](./routing_topology_knn.png)
 
-## Time budget
+## Section 2 - Local top-K algorithm
 
-72 hours from when you open this packet. Log your start time in
-`DESIGN.md`.
+Each PE runs insertion sort over its `rows_per_pe` rows, keeping a sorted list of K `(dist, global_index)` pairs. Global indices are computed as `pe_linear * rows_per_pe + local_row` so the merge can compare entries across PE boundaries. Insertion sort was chosen because K is small (at most 256) and the list stays sorted at all times, making it directly ready for the merge step.
 
-## Before you write any CSL (≈30 min)
+Cost per PE: distance computation costs roughly 2 x d_dim FP ops per row (128 rows x 32 dims x 2 = 8192 FP ops at baseline). Insertion costs K/2 comparisons per row on average (128 x 8 = 1024 at baseline). 
 
-SDK download: [Cerebras-SDK-2.0.0](https://www.cerebras.ai/developers/sdk-request)
-You will get the link to download the SDK immediately after you complete the form. If you do not get the sdk, reach out to us!
+The distance loop dominates at about 8x more work.
 
-Documentation: https://sdk.cerebras.net/
+## Section 3 - Fabric bandwidth accounting
 
-The SDK runs only on Linux with Apptainer (or Singularity). Four ways
-to get that environment:
+Each PE sends K x 2 wavelets per gather phase (K pairs, two f32 each). In the worst case (K=256, P=2), 512 wavelets cross a single grid edge per phase, 1024 total across both phases. For the same case each PE does 256 x 32 = 8192 FP ops. The kernel is compute-bound, not bandwidth-bound.
 
-- **Linux + Apptainer/Singularity** — native, fastest.
-- **Mac or Windows + Docker** — build the image in `docker/` and work
-  inside it locally. See `docker/README.md`.
-- **Cloud Linux VM on Render** — sign up at render.com and redeem promo
-  code `RENDER-CODETV` for $50 in free credits, which covers well over
-  the 72-hour window on a small instance. Then install Apptainer and
-  follow the Linux path.
-- **GitHub Codespaces** — create a Codespace
-  on a *private* cloned repo. Download the SDK tarball
-  from the Dropbox link, change `dl=0` to
-  `dl=1` and run `wget "YOUR_LINK?dl=1" -O sdk.tar.gz`, then extract with
-  `tar -xzf sdk.tar.gz -C sdk`. Install Apptainer via
-  `sudo add-apt-repository -y ppa:apptainer/ppa && sudo apt-get install -y apptainer`,
-  then symlink it: `sudo ln -sf /usr/bin/apptainer /usr/bin/singularity`.
-  Run `./sdk/cslc --version` to confirm. 
+## Section 4 - Tie-breaking argument
 
-```bash
-# 1. Toolchain check
-cslc --help
-cs_python -c 'import numpy; print(numpy.__version__)'
+Tie-breaking is enforced in two places. In `topk_insert`, a new entry is inserted ahead of an existing one if its distance is smaller, or if distances are equal and its global index is smaller. The same comparison is used in `merge_lists`. This guarantees equal-distance rows are always ordered by ascending global index throughout the pipeline.
 
-# 2. Examine exactly what "correct" means
-python3 reference.py
-# Prints expected top-K for each of 6 deterministic test cases.
+Wavelet arrival order does not affect correctness. The `mpi_y.gather` callback only fires after all P PEs in the column have finished sending, so `col_gather` holds complete data before `merge_col_task` runs. The same applies to `final_task` `merge_lists` always operates on complete buffers and produces the same result every run.
 
-# 3. Compile and run ONE tutorial end-to-end before touching your own code
-cd <sdk>/examples/benchmarks/gemv-collectives_2d
-bash commands_wse2.sh
-# If this prints SUCCESS, your toolchain is good. If not, fix this first.
-```
+## Section 5 - What I'd do with 2x more time
 
-## Minimum viable submission
+**1. Vectorized distance using `@fmacs`:** The current `squared_l2` uses a scalar while-loop over d_dim elements. The optimized version would subtract q from the row into a scratch buffer using `@fsubs`, then accumulate the squared result with `@fmacs`, replacing the loop with a single pipelined hardware operation on the dominant cost.
 
-Everything from `src-starter/` plus:
-
-- `layout.csl` and one or more PE program files of your design.
-- `run.py` that reads test cases from `reference.py`, memcpys inputs,
-  launches, reads back outputs, compares to the oracle, prints
-  `PASS: <case>` on success.
-- `commands.sh` that compiles *and* runs the `baseline` case.
-- `DESIGN.md` — one page. See SPEC §5. **This is the most important
-  artifact. We read it closely.** Candidates who used AI write good
-  memos because they understood the output. Candidates who pasted
-  without understanding cannot. Understand your code!
-
-While there is no performance minimum, we will stack rank all correct submissions from least to most performant and invite the top 10 candidates to interview. Make it as efficient as you can - cycles matter even though the gate is waived.
-
-## Running the grader locally
-
-```bash
-cd tests
-python3 -m pytest test_correctness.py -v --submission=../src-starter
-```
-
-For each of the 6 cases, the grader:
-1. Compiles your `layout.csl` with that case's params.
-2. Runs your `run.py --case <case>`.
-3. Asserts the `PASS: <case>` marker appears in stdout.
-
-The CI machine runs this same script. If it passes locally, it passes
-grading.
-
-## What "good" looks like
-
-- **Correctness**: all 6 cases bit-identical indices, distances
-  `allclose` within 1e-3. `all_equal` and `duplicates` are the
-  tie-breaking tests. Don't skip them.
-- **Determinism**: run twice, same output.
-- **Perf**: per-case cycle gate in SPEC §2.5 (1.3× our staff reference,
-  per test case). Reference counts live in `cycles.json`. **All entries
-  are currently `null` — the perf gate is fully waived for this
-  packet.** You get full perf credit if correctness passes. No
-  retroactive enforcement when real numbers land. Optimize visibly
-  anyway; perf reasoning is part of the DESIGN.md (15 pts) score.
-- **DESIGN.md**: specific, honest, and short. Diagrams beat paragraphs.
-
-## Submission
-
-Invite `kevint-cerebras` + `danielkim-cerebras` to your solution repo and [fill out this form.](https://forms.gle/c3Z7ngwSux4nSx4i6)
-
-## Questions
-
-Email `Daniel.kim@cerebras.net` and `Kevin.taylor@cerebras.net` — we
-answer within 24 hours on business days. Spec clarifications: fine.
-"How do I write CSL": that's what the tutorials are for.
+**2. Tree reduction:** Instead of gathering all P x K results to one root, do pairwise merges in log2(P) steps where each merge handles only 2 x K pairs. For P=4 this means two parallel merge steps instead of one large one, reducing both root PE work and fabric traffic.
